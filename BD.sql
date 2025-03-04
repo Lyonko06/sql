@@ -1,78 +1,56 @@
-CREATE SCHEMA IF NOT EXISTS BD;
-USE BD;
+CREATE SCHEMA IF NOT EXISTS BD_Proveedores;
+USE BD_Proveedores;
 
-DROP TABLE IF EXISTS s_cliente;
-CREATE TABLE s_cliente 
- (id                         VARCHAR(3)  NOT NULL,
-  nombre                       VARCHAR(20) NOT NULL,
-  telefono                      VARCHAR(20) NOT NULL,
-  direccion                    VARCHAR(20),
-  ciudad                       VARCHAR(20),
-  provincia                      VARCHAR(15),
-  pais                    VARCHAR(20),
-  codigo_postal                   VARCHAR(15),
-  historial_crediticio              VARCHAR(9),
-  ventas_id               VARCHAR(3),
-  region_id                  VARCHAR(3),
-  comentarios                   VARCHAR(255),
-  CONSTRAINT s_cliente_id_pk PRIMARY KEY (id),
-  CONSTRAINT s_cliente_historial_crediticio_ck
-  CHECK (historial_crediticio IN ('EXCELENTE', 'BUENO', 'MALO'))
- );
+DROP TABLE IF EXISTS Proveedores;
+CREATE TABLE Proveedores (
+  id_proveedor          VARCHAR(3) NOT NULL,
+  nombre               VARCHAR(50) NOT NULL,
+  apellido             VARCHAR(50) NOT NULL,
+  razon_social         VARCHAR(100) NOT NULL,
+  cedula_identidad     VARCHAR(20),
+  cedula_juridica      VARCHAR(20),
+  domicilio           VARCHAR(100),
+  ciudad              VARCHAR(50),
+  provincia           VARCHAR(50),
+  pais               VARCHAR(50),
+  codigo_postal       VARCHAR(10),
+  email              VARCHAR(100),
+  telefono           VARCHAR(20),
+  fax                VARCHAR(20),
+  tipo_proveedor     ENUM('Fabricante', 'Distribuidor', 'Representante') NOT NULL,
+  comentarios        VARCHAR(255),
+  CONSTRAINT proveedores_pk PRIMARY KEY (id_proveedor)
+);
 
+DROP TABLE IF EXISTS Concesion_Credito;
+CREATE TABLE Concesion_Credito (
+  id_credito       VARCHAR(3) NOT NULL,
+  id_proveedor     VARCHAR(3) NOT NULL,
+  plazo_credito    ENUM('8 días', '15 días', '30 días', 'Otro') NOT NULL,
+  otro_plazo       VARCHAR(50),
+  CONSTRAINT concesion_credito_pk PRIMARY KEY (id_credito),
+  CONSTRAINT concesion_credito_proveedor_fk FOREIGN KEY (id_proveedor) 
+  REFERENCES Proveedores(id_proveedor) ON DELETE CASCADE
+);
 
-INSERT INTO s_cliente VALUES ('301', 'Sports,Inc', '540-123-4567','72 High St',
-'Harrisonburg', 'VA','US', '22809','EXCELENTE', '12', '1', NULL);
-INSERT INTO s_cliente VALUES ('302', 'Toms Sporting BUENOs', '540-987-6543','6741 Main St',
-'Harrisonburg', 'VA','US', '22809','malo', '14', '1', NULL);
-INSERT INTO s_cliente VALUES ('303', 'Athletic Attire', '540-123-6789','54 Market St',
-'Harrisonburg', 'VA','US', '22808','BUENO', '14', '1', NULL);
-INSERT INTO s_cliente 
-VALUES ('304', 'Athletics For All', '540-987-1234','286 Main St', 'Harrisonburg', 'VA',
-'US', '22808','EXCELENTE', '12', '1', NULL);
-INSERT INTO s_cliente VALUES ('305', 'Shoes for Sports', '540-123-9876','538 High St',
-'Harrisonburg', 'VA','US', '22809','EXCELENTE', '14', '1', NULL);
-INSERT INTO s_cliente VALUES ('306', 'BJ Athletics', '540-987-9999','632 Water St',
-'Harrisonburg', 'VA','US', '22810','malo', '12', '1', NULL);
+DROP TABLE IF EXISTS Productos_Servicios;
+CREATE TABLE Productos_Servicios (
+  id_producto      VARCHAR(3) NOT NULL,
+  id_proveedor     VARCHAR(3) NOT NULL,
+  descripcion      VARCHAR(255) NOT NULL,
+  CONSTRAINT productos_pk PRIMARY KEY (id_producto),
+  CONSTRAINT productos_proveedor_fk FOREIGN KEY (id_proveedor) 
+  REFERENCES Proveedores(id_proveedor) ON DELETE CASCADE
+);
 
-INSERT INTO s_cliente VALUES ('403', 'Athletics One', '717-234-6786','912 Columbia Rd',
-'Lancaster', 'PA','US', '17601','BUENO', '14', '1', NULL);
-INSERT INTO s_cliente VALUES ('404', 'Great Athletes', '717-987-2341','121 Litiz Pike',
-'Lancaster', 'PA','US', '17602','EXCELENTE', '12', '1', NULL);
-INSERT INTO s_cliente VALUES ('405', 'Athletics Two', '717-987-9875','435 High Rd',
-'Lancaster', 'PA','US', '17602','EXCELENTE', '14', '1', NULL);
-INSERT INTO s_cliente VALUES ('406', 'Athletes Attic', '717-234-9888','101 Greenfield Rd',
-'Lancaster', 'PA','US', '17601','malo', '12', '1', NULL);
+INSERT INTO Proveedores VALUES 
+('101', 'Carlos', 'Gómez', 'Tech Solutions S.A.', '12345678', 'J-12345678-9','Av. Principal 123', 'Nuevo Chimbote', 'Áncash', 'Perú', '02710','contacto@techsolutions.com', '987654321', '043-123456', 'Fabricante', NULL),
+('102', 'Lucía', 'Fernández', 'Distribuidora Global S.A.C.', '87654321', 'J-98765432-1', 'Calle Secundaria 456', 'Chimbote', 'Áncash', 'Perú', '02711','ventas@distribuidoraglobal.com', '912345678', NULL, 'Distribuidor', NULL);
 
-INSERT INTO s_cliente VALUES ('201', 'One Sport', '55-112066222','82 Via Bahia', 'Sao Paolo',
-NULL, 'Brazil', NULL,'EXCELENTE', '12', '2', NULL);
-INSERT INTO s_cliente VALUES ('202', 'Deportivo Caracas', '58-28066222','31 Sabana Grande',
-'Caracas', NULL, 'Venezuela', NULL,'EXCELENTE', '12', '2', NULL);
-INSERT INTO s_cliente VALUES ('203', 'New Delhi Sports', '91-11903338','11368 Chanakya',
-'New Delhi', NULL, 'India', NULL,'BUENO', '11', '4', NULL);
-INSERT INTO s_cliente VALUES ('204', 'Ladysport', '1-206-104-0111','281 Queen Street',
-'Seattle', 'Washington', 'US', NULL,'EXCELENTE', '11', '1', NULL);
-INSERT INTO s_cliente VALUES ('205', 'Kim', '852-3693888', '15 Henessey Road', 'Hong Kong', NULL, NULL, NULL, 'EXCELENTE', '11', '4', NULL);
+INSERT INTO Concesion_Credito VALUES 
+('201', '101', '30 días', NULL),
+('202', '102', 'Otro', '45 días');
 
-INSERT INTO s_cliente VALUES ('206', 'Sportique', '33-93425722253','172 Rue de Place',
-'Cannes', NULL, 'France', NULL,'EXCELENTE', '13', '5', NULL);
-INSERT INTO s_cliente VALUES ('207', 'Tall Rock Sports', '234-16036222','10 Saint Antoine',
-'Lagos', NULL, 'Nigeria', NULL,'BUENO', NULL, '3', NULL);
-INSERT INTO s_cliente VALUES ('208', 'Muench Sports', '49-895274449','435 Gruenestrasse',
-'Munich', NULL, 'Germany', NULL,'BUENO', '13', '5', NULL);
-
-INSERT INTO s_cliente VALUES ('209', 'Beisbol Si!', '809-352666','415 Playa Del Mar',
- 'San Pedro de Macoris', NULL, 'Dominican Republic', NULL, 'EXCELENTE', '11', '6', NULL);
-INSERT INTO s_cliente VALUES ('210', 'Futbol Sonora', '52-404555','5 Via Saguaro', 'Nogales',
-NULL, 'Mexico', NULL,'EXCELENTE', '12', '2', NULL);
-INSERT INTO s_cliente VALUES ('211', 'Helmut''s Sports', '42-2111222','45 Modrany', 'Prague',
-NULL, 'Czechoslovakia', NULL,'EXCELENTE', '11', '5', NULL);
-INSERT INTO s_cliente VALUES ('212', 'Hamada Sport', '20-31209222','47A Corniche', 
-'Alexandria', NULL, 'Egypt', NULL,'EXCELENTE', '13', '3', NULL);
-INSERT INTO s_cliente VALUES ('213', 'Sports Emporium', '1-415-555-6281','4783 168th Street',
-'San Francisco', 'CA', 'US', NULL,'EXCELENTE', '11', '1', NULL);
-INSERT INTO s_cliente VALUES ('214', 'Sports Retail', '1-716-555-7777','115 Main Street',
-'Buffalo', 'NY', 'US', NULL, 'MALO', '11', '1', NULL);
-INSERT INTO s_cliente VALUES ('215', 'Sports Russia', '7-0953892444','7070 Yekatamina',
-'Saint Petersburg', NULL, 'Russia', NULL,'MALO', '11', '5', NULL);
-COMMIT;
+INSERT INTO Productos_Servicios VALUES 
+('301', '101', 'Servidores de alto rendimiento para data centers'),
+('302', '101', 'Licencias de software empresarial'),
